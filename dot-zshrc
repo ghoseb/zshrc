@@ -16,6 +16,7 @@ HISTSIZE=3000
 DIRSTACKSIZE=30
 
 # ZSH Options
+setopt promptsubst
 setopt autopushd pushdminus pushdsilent pushdtohome pushdignoredups # push directories visited automatically onto stack
 setopt autocd
 setopt globdots # find dotfiles easier
@@ -54,6 +55,10 @@ bindkey -s '^|g' ' | grep ""^[OD'             # c-| g  pipe to grep
 bindkey -s '^|a' " | awk '{print $}'^[OD^[OD"  # c-| a  pipe to awk
 bindkey -s '^|s' ' | sed -e "s///g"^[OD^[OD^[OD^[OD' # c-| s  pipe to sed
 bindkey -s '^|w' " | wc -l\n"                   # c-| w  pipe to wc
+
+# search history on <up> key instead of paging previous commands:
+bindkey "\e[A" history-search-backward
+bindkey "\e[B" history-search-forward
 
 # Colours
 local red="%{"$'\e[1;31m'"%}"
@@ -102,7 +107,6 @@ zstyle ':completion:*:*:kill:*' menu yes select
 zstyle ':completion:*:kill:*'   force-list always
 zstyle ':completion:::::' completer _complete _approximate
 zstyle ':completion:*:approximate:*' max-errors 2
-zstyle :compinstall filename '/home/prmohan/.zshrc'
 zstyle ':completion:*' completer _complete _prefix
 zstyle ':completion::prefix-1:*' completer _complete
 zstyle ':completion:incremental:*' completer _complete _correct
@@ -141,6 +145,10 @@ pskill()
 { 
 	kill -9 $(ps -aux | grep $1 | grep -v grep | awk '{ print $1 }')
 	echo -n "Killed $1 process..."
+}
+
+function precmd {
+    rehash
 }
 
 case $TERM in
